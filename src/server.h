@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
+#include <time.h>
 
 #ifndef SERVER_H   
 #define SERVER_H

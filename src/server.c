@@ -6,6 +6,7 @@
  * 	For each correctly typed qoute, you are given points. The first player to reach 100 points, wins. 
  */
 
+
 #include "server.h"
 
 #define MAX_PLAYERS 3
@@ -194,6 +195,24 @@ void set_commands() {
 }
 
 /*
+ * Server up test
+ */
+void ping() {
+	printf("%s\n","ping");
+}
+
+/*
+ * Ping thread
+ */
+void *ping_thread(void *arg) {
+    while(1) {
+        sleep(120); // every 2 minutes
+        ping();
+    }
+    return 0;
+}
+
+/*
  * starter function
  */
 int main() {
@@ -217,8 +236,12 @@ int main() {
 	bind(listener, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	listen(listener, 10);
 
-	printf("\nServer up and running\n");
+	printf("\nThe server is up and running\n");
 	set_commands();
+
+	// set ping thread
+	pthread_t ping_id;
+	pthread_create(&ping_id, NULL, &ping_thread, NULL);
 
 	while (1) {
 		socklen_t player_len = sizeof(player_addr);
