@@ -1,5 +1,5 @@
 /*
- * 	Name: Telephrase Chat Application
+ * 	Name: Telephrase
  * 
  *	Description: 
  *	A game that tests the players ability to type a qoute the fastest
@@ -194,19 +194,6 @@ void set_commands() {
 }
 
 /*
- *	New player welcome message
- */
-void welcome_msg() {
-	char* line = "----------------------------------------------\n";
-	printf("%s", line);
-	printf("\tWelcome to Telephrase\n");
-	printf("Don't know how to play? Simply type ':htp'\n");
-	printf("Once there are 3 players, the game will start!\n");
-	printf("%s", line);
-	printf("\n");
-}
-
-/*
  * starter function
  */
 int main() {
@@ -230,7 +217,7 @@ int main() {
 	bind(listener, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	listen(listener, 10);
 
-	welcome_msg();
+	printf("\nServer up and running\n");
 	set_commands();
 
 	while (1) {
