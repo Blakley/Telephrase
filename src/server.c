@@ -9,19 +9,21 @@
 
 #include "server.h"
 
-#define MAX_PLAYERS 3
+#define MAX_PLAYERS 10
 #define BUFFER_SIZE 2048
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x)[0])
 
 player* players[MAX_PLAYERS];
 
-
-static char* all_ready[MAX_PLAYERS]; // # of players that are ready to begin
 static int player_count = 0;
 static int uid = 10;
-static char* current_phrase; 
+static char current_phrase[65]; 
+static int started = 0;
 
 pthread_mutex_t players_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+
+void start_game();
 
 /*
  * flushes stdout
@@ -115,6 +117,9 @@ void* player_handler(void* arg) {
 		sprintf(buffer, "%s has joined the game!\n", p->user_name);
 		printf("%s", buffer);
 		message_players(buffer, p->user_id);
+
+		if (player_count >= 3 && started == 0) // start game
+			start_game();
 	}
 
 	bzero(buffer, BUFFER_SIZE);
@@ -156,20 +161,20 @@ void* player_handler(void* arg) {
 	return NULL;
 }
 
-/*
- * Check if game is ready to start
- */
-int check_status() {
-	if (player_count == MAX_PLAYERS && ARRAY_SIZE(all_ready) == player_count)
-		return 1;
-	return 0;
-}
 
+/*
+ *
+ */
+void question_timer(int seconds) {
+	sleep(seconds);	
+}
 
 /*
  * Game handler
  */
 void start_game() {
+	started = 1;
+
 	// list of telephrase phrases
 	const char* phrases[5] = {
 		"Peter Piper picked a peck of pickled peppers",
@@ -178,20 +183,17 @@ void start_game() {
 		"Lesser leather never weather",
 		"Eleven benevolent elephants were yelling at David Letterman"
 	};
+
+	// for (int i = 0; i < 5; i++) {
+	// 	printf("i: %d\n", i);
+	// }
+
 	// 			TODO: 
 	// iterate through questions, 
 	// give users x amount of time to answer,
 	// award points for correct answers, 
 	// update scoreboard, 
 	// check if game is finished(max_score reached)
-}
-
-void set_commands() {
-	const char* commands[3] = {
-		":htp",
-		":exit",
-		":scoreboard"
-	};
 }
 
 /*
@@ -237,7 +239,6 @@ int main() {
 	listen(listener, 10);
 
 	printf("\nThe server is up and running\n");
-	set_commands();
 
 	// set ping thread
 	pthread_t ping_id;
@@ -262,11 +263,6 @@ int main() {
 		// Add player to the server queue
 		add_player(p);
 		pthread_create(&tid, NULL, &player_handler, (void*)p);
-
-		// Check if all players are ready & start the game
-		if (check_status() == 1)
-			start_game();
-
 		sleep(2.5);
 	}
 

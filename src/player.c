@@ -132,12 +132,12 @@ int main(int argc, char const *argv[]) {
         return EXIT_FAILURE;
     }
 
-    // while (1){
-    //     if (exit_flag){
-    //         printf("\nThanks for playing\n");
-    //         break;
-    //     }
-    // }
+    while (1){
+        if (exit_flag){
+            // printf("\nThanks for playing\n");
+            break;
+        }
+    }
 
     close(sock_fd);
 	return 0;
